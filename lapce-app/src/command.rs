@@ -183,6 +183,10 @@ pub enum LapceWorkbenchCommand {
     #[strum(message = "Open File")]
     OpenFile,
 
+    #[strum(serialize = "open_md_preview")]
+    #[strum(message = "Open Markdown Preview")]
+    OpenMarkdownPreview,
+
     #[strum(serialize = "reveal_active_file_in_file_explorer")]
     #[strum(message = "Reveal Active File in File Explorer")]
     RevealActiveFileInFileExplorer,
@@ -710,6 +714,9 @@ pub enum InternalCommand {
     },
     OpenVoltView {
         volt_id: VoltID,
+    },
+    OpenMarkdownPreview {
+        editor_tab_id: EditorTabId,
     },
     ResetBlinkCursor,
     OpenDiffFiles {
