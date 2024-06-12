@@ -33,7 +33,7 @@ use floem::{
         style_helpers::{self, auto, fr},
         Line,
     },
-    unit::PxPctAuto,
+    unit::{PxPctAuto, UnitExt as _},
     views::{
         clip, container, drag_resize_window_area, drag_window_area, dyn_stack,
         empty, label, rich_text,
@@ -2556,6 +2556,7 @@ fn palette_content(
     let config = window_tab_data.common.config;
     let run_id = window_tab_data.palette.run_id;
     let input = window_tab_data.palette.input.read_only();
+    let has_preview = window_tab_data.palette.has_preview;
     let palette_item_height = 25.0;
     let workspace = window_tab_data.workspace.clone();
     stack((
@@ -2630,17 +2631,19 @@ fn palette_content(
                 Display::None
             })
             .padding_horiz(10.0)
-            .align_items(Some(AlignItems::Center))
+            .items_center()
             .height(palette_item_height as f32)
         }),
     ))
     .style(move |s| {
         s.flex_col()
-            .width_full()
             .min_height(0.0)
+            .min_width(25.pct())
             .max_height((layout_rect.get().height() * 0.45 - 36.0).round() as f32)
             .padding_bottom(5.0)
             .padding_bottom(5.0)
+            .margin_right(10)
+            .apply_if(has_preview.get(), |s| s.width_full())
     })
 }
 
@@ -2674,6 +2677,7 @@ fn palette_preview(window_tab_data: Rc<WindowTabData>) -> impl View {
             Display::None
         })
         .flex_grow(1.0)
+        .size_full()
     })
 }
 
@@ -2686,8 +2690,11 @@ fn palette(window_tab_data: Rc<WindowTabData>) -> impl View {
     container(
         stack((
             palette_input(window_tab_data.clone()),
-            palette_content(window_tab_data.clone(), layout_rect),
-            palette_preview(window_tab_data.clone()),
+            stack((
+                palette_content(window_tab_data.clone(), layout_rect),
+                palette_preview(window_tab_data.clone()),
+            ))
+            .style(|s| s.flex_row().size_full()),
         ))
         .on_event_stop(EventListener::PointerDown, move |_| {})
         .style(move |s| {
@@ -2700,16 +2707,20 @@ fn palette(window_tab_data: Rc<WindowTabData>) -> impl View {
                     PxPctAuto::Pct(100.0)
                 })
                 .height(if has_preview.get() {
-                    PxPctAuto::Px(layout_rect.get().height() - 10.0)
+                    PxPctAuto::Px(layout_rect.get().height() * 0.75 - 10.0)
                 } else {
                     PxPctAuto::Auto
                 })
                 .margin_top(4.0)
                 .border(1.0)
+                .flex_col()
                 .border_radius(6.0)
                 .border_color(config.color(LapceColor::LAPCE_BORDER))
-                .flex_col()
                 .background(config.color(LapceColor::PALETTE_BACKGROUND))
+                .box_shadow_blur(3.0)
+                .box_shadow_color(config.color(LapceColor::LAPCE_DROPDOWN_SHADOW))
+                .box_shadow_h_offset(1.)
+                .box_shadow_v_offset(1.)
         }),
     )
     .style(move |s| {
