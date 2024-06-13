@@ -65,7 +65,7 @@ pub struct UIConfig {
     pub trim_search_results_whitespace: bool,
 
     #[field_names(desc = "Set the line height for list items")]
-    list_line_height: usize,
+    pub list_line_height: usize,
 
     #[field_names(desc = "Set position of the close button in editor tabs")]
     pub tab_close_button: TabCloseButton,

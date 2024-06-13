@@ -2559,7 +2559,7 @@ fn palette_content(
     let run_id = window_tab_data.palette.run_id;
     let input = window_tab_data.palette.input.read_only();
     let has_preview = window_tab_data.palette.has_preview;
-    let palette_item_height = 25.0;
+    let palette_item_height = config.get().ui.list_line_height as f64;
     let workspace = window_tab_data.workspace.clone();
     stack((
         scroll({
