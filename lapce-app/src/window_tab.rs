@@ -1033,7 +1033,9 @@ impl WindowTabData {
             PaletteSymbol => {
                 self.palette.run(PaletteKind::DocumentSymbol);
             }
-            PaletteWorkspaceSymbol => {}
+            PaletteWorkspaceSymbol => {
+                self.palette.run(PaletteKind::WorkspaceSymbol);
+            }
             PaletteCommand => {
                 self.palette.run(PaletteKind::Command);
             }
