@@ -1300,7 +1300,27 @@ impl PaletteData {
         if let Some(item) = items.get(index) {
             match &item.content {
                 PaletteItemContent::PaletteHelp { .. } => {}
-                PaletteItemContent::File { .. } => {}
+                PaletteItemContent::File { full_path, .. } => {
+                    if !self.common.config.get().ui.palette_file_search_visible {
+                        return;
+                    }
+                    self.has_preview.set(true);
+                    let (doc, new_doc) =
+                        self.main_split.get_doc(full_path.clone(), None);
+                    self.preview_editor.update_doc(doc);
+
+                    self.preview_editor.go_to_location(
+                        EditorLocation {
+                            path: full_path.clone(),
+                            position: Some(EditorPosition::Line(0)),
+                            scroll_offset: None,
+                            ignore_unconfirmed: false,
+                            same_editor_tab: false,
+                        },
+                        new_doc,
+                        None,
+                    );
+                }
                 PaletteItemContent::Line { line, .. } => {
                     self.has_preview.set(true);
                     let editor = self.main_split.active_editor.get_untracked();

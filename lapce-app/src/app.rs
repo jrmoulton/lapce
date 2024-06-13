@@ -1101,6 +1101,7 @@ fn editor_tab_header(
                 .apply_if(scroll_offset.x1 < content_size.width, |s| {
                     s.margin_left(0.)
                 })
+                .apply_if(!config.get().ui.tab_split_closeall_visible, |s| s.hide())
         }),
     ))
     .style(move |s| {
@@ -2492,6 +2493,7 @@ fn palette_item(
                     config.get().color(LapceColor::PALETTE_CURRENT_BACKGROUND),
                 )
             })
+            .border_radius(6.)
     })
 }
 
@@ -2586,7 +2588,7 @@ fn palette_content(
                             .and_then(|kind| keymaps.get(kind.str()))
                             .and_then(|maps| maps.first())
                     };
-                    container(palette_item(
+                    palette_item(
                         workspace,
                         i,
                         item,
@@ -2594,7 +2596,7 @@ fn palette_content(
                         palette_item_height,
                         config,
                         keymap,
-                    ))
+                    )
                     .on_click_stop(move |_| {
                         clicked_index.set(Some(i));
                     })
@@ -2609,7 +2611,7 @@ fn palette_content(
                     })
                 },
             )
-            .style(|s| s.width_full().flex_col())
+            .style(|s| s.width_full().flex_col().padding_horiz(10))
         })
         .ensure_visible(move || {
             Size::new(1.0, palette_item_height)
@@ -2639,11 +2641,10 @@ fn palette_content(
         s.flex_col()
             .min_height(0.0)
             .min_width(25.pct())
-            .max_height((layout_rect.get().height() * 0.45 - 36.0).round() as f32)
+            .max_height_full()
             .padding_bottom(5.0)
             .padding_bottom(5.0)
-            .margin_right(10)
-            .apply_if(has_preview.get(), |s| s.width_full())
+            .apply_if(!has_preview.get(), |s| s.width_full())
     })
 }
 
@@ -2700,17 +2701,16 @@ fn palette(window_tab_data: Rc<WindowTabData>) -> impl View {
         .style(move |s| {
             let config = config.get();
             s.width(config.ui.palette_width() as f64)
-                .max_width_full()
-                .max_height(if has_preview.get() {
-                    PxPctAuto::Auto
-                } else {
-                    PxPctAuto::Pct(100.0)
-                })
+                .max_width(85.pct())
                 .height(if has_preview.get() {
-                    PxPctAuto::Px(layout_rect.get().height() * 0.75 - 10.0)
+                    PxPctAuto::Px(layout_rect.get().height() * 0.75)
                 } else {
                     PxPctAuto::Auto
                 })
+                .apply_if(has_preview.get(), |s| {
+                    s.width(config.ui.palette_width_preview() as f64)
+                })
+                .max_height(layout_rect.get().height() * 0.75)
                 .margin_top(4.0)
                 .border(1.0)
                 .flex_col()

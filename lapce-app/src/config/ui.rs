@@ -45,6 +45,16 @@ pub struct UIConfig {
     palette_width: usize,
 
     #[field_names(
+        desc = "Controls the width of the command palette when there is a preview. If 0, uses the normal palette width"
+    )]
+    palette_width_preview: usize,
+
+    #[field_names(
+        desc = "Display a file preview in the palette when searching for files in a project"
+    )]
+    pub palette_file_search_visible: bool,
+
+    #[field_names(
         desc = "Set the hover font family. If empty, it uses the UI font family"
     )]
     hover_font_family: String,
@@ -68,6 +78,9 @@ pub struct UIConfig {
 
     #[field_names(desc = "Display the Forward/Back buttons in the tab bar")]
     pub tab_forward_back_visible: bool,
+
+    #[field_names(desc = "Display the Split/Close All buttons in the tab bar")]
+    pub tab_split_closeall_visible: bool,
 }
 
 #[derive(
@@ -145,6 +158,14 @@ impl UIConfig {
             500
         } else {
             self.palette_width.max(100)
+        }
+    }
+
+    pub fn palette_width_preview(&self) -> usize {
+        if self.palette_width_preview == 0 {
+            self.palette_width()
+        } else {
+            self.palette_width_preview.max(100)
         }
     }
 }
