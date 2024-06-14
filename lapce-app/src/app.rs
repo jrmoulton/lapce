@@ -40,8 +40,8 @@ use floem::{
         scroll::{
             scroll, HideBar, PropagatePointerWheel, VerticalScrollAsHorizontal,
         },
-        stack, svg, tab, text, tooltip, virtual_stack, Decorators, VirtualDirection,
-        VirtualItemSize, VirtualVector,
+        stack, svg, tab, text, tooltip, virtual_stack, Decorators, LabelClass,
+        VirtualDirection, VirtualItemSize, VirtualVector,
     },
     window::{ResizeDirection, WindowConfig, WindowId},
     IntoView, View,
@@ -2545,7 +2545,7 @@ impl VirtualVector<(usize, PaletteItem)> for PaletteItems {
 
 fn palette_content(
     window_tab_data: Rc<WindowTabData>,
-    layout_rect: ReadSignal<Rect>,
+    _layout_rect: ReadSignal<Rect>,
 ) -> impl View {
     let items = window_tab_data.palette.filtered_items;
     let keymaps = window_tab_data
@@ -2695,7 +2695,7 @@ fn palette(window_tab_data: Rc<WindowTabData>) -> impl View {
                 palette_content(window_tab_data.clone(), layout_rect),
                 palette_preview(window_tab_data.clone()),
             ))
-            .style(|s| s.flex_row().size_full()),
+            .style(|s| s.flex_row().width_full().flex_grow(1.).min_height(0.)),
         ))
         .on_event_stop(EventListener::PointerDown, move |_| {})
         .style(move |s| {
@@ -2703,7 +2703,7 @@ fn palette(window_tab_data: Rc<WindowTabData>) -> impl View {
             s.width(config.ui.palette_width() as f64)
                 .max_width(85.pct())
                 .height(if has_preview.get() {
-                    PxPctAuto::Px(layout_rect.get().height() * 0.75)
+                    PxPctAuto::Px(layout_rect.get().height() * 0.85)
                 } else {
                     PxPctAuto::Auto
                 })
@@ -3367,6 +3367,11 @@ fn workspace_tab_header(window_data: WindowData) -> impl View {
                             .border_right(1.0)
                             .border_color(config.color(LapceColor::LAPCE_BORDER))
                             .apply_if(
+                                config.ui.tab_separator_height
+                                    == TabSeparatorHeight::Full,
+                                |s| s.height_full(),
+                            )
+                            .apply_if(
                                 cfg!(target_os = "macos") && index.get() == 0,
                                 |s| s.border_left(1.0),
                             )
@@ -3443,12 +3448,14 @@ fn workspace_tab_header(window_data: WindowData) -> impl View {
     };
 
     stack((
-        empty().style(move |s| {
-            let is_macos = cfg!(target_os = "macos");
-            s.min_width(75.0)
-                .width(75.0)
-                .apply_if(!is_macos, |s| s.hide())
-        }),
+        empty()
+            .style(move |s| {
+                let is_macos = cfg!(target_os = "macos");
+                s.min_width(75.0)
+                    .width(75.0)
+                    .apply_if(!is_macos, |s| s.hide())
+            })
+            .debug_name("Stoplight spacer"),
         dyn_stack(
             move || {
                 let tabs = tabs.get();
@@ -3525,6 +3532,7 @@ fn workspace_tab_header(window_data: WindowData) -> impl View {
             .border_color(config.color(LapceColor::LAPCE_BORDER))
             .background(config.color(LapceColor::PANEL_BACKGROUND))
             .items_center()
+            .class(LabelClass, |s| s.selectable(false))
     })
     .debug_name("Workspace Tab Header")
 }

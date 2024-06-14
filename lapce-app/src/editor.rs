@@ -708,10 +708,27 @@ impl EditorData {
             ScrollCommand::ScrollDown => {
                 self.scroll(true, count.unwrap_or(1), mods);
             }
-            // TODO:
-            ScrollCommand::CenterOfWindow => {}
-            ScrollCommand::TopOfWindow => {}
-            ScrollCommand::BottomOfWindow => {}
+            ScrollCommand::CenterOfWindow => {
+                self.editor.center_window();
+            }
+            ScrollCommand::TopOfWindow => {
+                let scroll_off = self
+                    .common
+                    .config
+                    .get_untracked()
+                    .editor
+                    .cursor_surrounding_lines;
+                self.editor.top_of_window(scroll_off);
+            }
+            ScrollCommand::BottomOfWindow => {
+                let scroll_off = self
+                    .common
+                    .config
+                    .get_untracked()
+                    .editor
+                    .cursor_surrounding_lines;
+                self.editor.bottom_of_window(scroll_off);
+            }
         }
 
         let current_completion_index = self
@@ -998,6 +1015,9 @@ impl EditorData {
             FocusCommand::GotoDefinition => {
                 self.go_to_definition();
             }
+            FocusCommand::GotoTypeDefinition => {
+                self.go_to_type_definition();
+            }
             FocusCommand::ShowCodeActions => {
                 self.show_code_actions(false);
             }
@@ -1259,6 +1279,108 @@ impl EditorData {
                                 ignore_unconfirmed: false,
                                 same_editor_tab: false,
                             }));
+                        }
+                    }
+                }
+            },
+        );
+    }
+
+    fn go_to_type_definition(&self) {
+        let doc = self.doc();
+        let path = match if doc.loaded() {
+            doc.content.with_untracked(|c| c.path().cloned())
+        } else {
+            None
+        } {
+            Some(path) => path,
+            None => return,
+        };
+
+        let offset = self.cursor().with_untracked(|c| c.offset());
+        let (start_position, position) = doc.buffer.with_untracked(|buffer| {
+            let start_offset = buffer.prev_code_boundary(offset);
+            let start_position = buffer.offset_to_position(start_offset);
+            let position = buffer.offset_to_position(offset);
+            (start_position, position)
+        });
+
+        let internal_command = self.common.internal_command;
+        let cursor = self.cursor().read_only();
+        let send = create_ext_action(self.scope, move |location| {
+            let current_offset = cursor.with_untracked(|c| c.offset());
+            if current_offset != offset {
+                return;
+            }
+
+            internal_command.send(InternalCommand::JumpToLocation { location });
+        });
+        let proxy = self.common.proxy.clone();
+        self.common.proxy.get_type_definition(
+            offset,
+            path.clone(),
+            position,
+            move |result| {
+                if let Ok(ProxyResponse::GetTypeDefinition { definition, .. }) =
+                    result
+                {
+                    if let Some(location) = match definition {
+                        GotoDefinitionResponse::Scalar(location) => Some(location),
+                        GotoDefinitionResponse::Array(locations) => {
+                            if !locations.is_empty() {
+                                Some(locations[0].clone())
+                            } else {
+                                None
+                            }
+                        }
+                        GotoDefinitionResponse::Link(location_links) => {
+                            let location_link = location_links[0].clone();
+                            Some(Location {
+                                uri: location_link.target_uri,
+                                range: location_link.target_selection_range,
+                            })
+                        }
+                    } {
+                        if location.range.start == start_position {
+                            proxy.get_references(
+                                path.clone(),
+                                position,
+                                move |result| {
+                                    if let Ok(
+                                        ProxyResponse::GetReferencesResponse {
+                                            references,
+                                        },
+                                    ) = result
+                                    {
+                                        if references.is_empty() {
+                                            return;
+                                        }
+                                        let location = &references[0];
+                                        send(EditorLocation {
+                                            path: path_from_url(&location.uri),
+                                            position: Some(
+                                                EditorPosition::Position(
+                                                    location.range.start,
+                                                ),
+                                            ),
+                                            scroll_offset: None,
+                                            ignore_unconfirmed: false,
+                                            same_editor_tab: false,
+                                        });
+                                    }
+                                },
+                            );
+                        } else {
+                            let path = path_from_url(&location.uri);
+                            send(EditorLocation {
+                                path,
+                                position: Some(EditorPosition::Position(
+                                    location.range.start,
+                                )),
+                                scroll_offset: None,
+                                ignore_unconfirmed: false,
+                                same_editor_tab: false,
+                            });
                         }
                     }
                 }
