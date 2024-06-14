@@ -1,0 +1,16 @@
+
+[target.aarch64-apple-darwin]
+rustflags = ["-Z", "threads=8", "-Z", "share-generics=y"]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-Z", "threads=8", "-Z", "share-generics=y"]
+linker = "rust-lld"
+
+
+[alias]
+ra = "run --package app"
+rra = "run --release --package app"
+ram = "run --package app --no-default-features"
+rram = "run --release --package app --no-default-features"
+rl = "run --package leviathan"
+rrl = "run --release --package leviathan"

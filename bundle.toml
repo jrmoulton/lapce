@@ -1,0 +1,73 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2021"
+license = "LicenseRef-bentleynevada-custom"
+description = "Leviathan"
+
+[package.metadata.bundle]
+name = "Leviathan"
+identifier = "com.bentleynevada.leviathan"
+icon = [
+    "icons/mac/128.png",
+    "icons/mac/128@2x.png",
+    "icons/mac/256.png",
+    "icons/mac/256@2x.png",
+    "icons/mac/512.png",
+    "icons/mac/512@2x.png",
+]
+
+
+[[bin]]
+name = "leviathan"
+path = "src/main.rs"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# floem = { git = "https://github.com/jrmoulton/floem" }
+# floem = { path = "../../floem" }
+floem = { git = "https://github.com/lapce/floem" }
+# floem = { git = "https://github.com/lapce/floem", rev = "c31740a3b8c445464905202cd6387fdc34afcc36" }
+
+image = { version = "*", default-features = false }
+resvg = "0.40.0"
+
+palette = "0.7.6"
+lucide-floem = { git = "https://github.com/jrmoulton/lucide-floem", default-features = false, features = [
+    "use-lapce",
+] }
+error-stack = { workspace = true }
+crossbeam-channel = { workspace = true }
+protocol = { path = "../protocol" }
+common = { path = "../common", features = ["std"] }
+log = { workspace = true }
+strum = { workspace = true }
+serde_json = { workspace = true }
+im = "*"
+
+pretty_env_logger = { version = "0.5", optional = true }
+tokio = { workspace = true, optional = true }
+usb = { path = "../usb", optional = true }
+probe-rs = { version = "0.24.0", optional = true }
+embed-doc-image = { version = "0.1.4", optional = true }
+
+heapless = { workspace = true }
+rand = { workspace = true, optional = true }
+
+
+[features]
+default = []
+
+flash = ["dep:probe-rs"]
+
+real = [
+    "dep:pretty_env_logger",
+    "dep:tokio",
+    "dep:usb",
+    "dep:rand",
+    "dep:embed-doc-image",
+    "floem/rfd-tokio",
+    "floem/tokio",
+]

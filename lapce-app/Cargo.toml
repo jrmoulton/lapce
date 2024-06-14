@@ -6,6 +6,11 @@ authors      = { workspace = true }
 edition      = { workspace = true }
 rust-version = { workspace = true }
 
+[package.metadata.bundle]
+name = "Lapce"
+identifier = "com.lapce.lapce"
+icon = ["../extra/macos/Lapce.app/Contents/Resources/lapce.icns"]
+
 [dependencies]
 alacritty_terminal = { workspace = true }
 anyhow             = { workspace = true }

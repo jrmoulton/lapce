@@ -196,9 +196,9 @@ pub struct EditorData {
     pub snippet: RwSignal<Option<SnippetIndex>>,
     pub inline_find: RwSignal<Option<InlineFindDirection>>,
     pub last_inline_find: RwSignal<Option<(InlineFindDirection, String)>>,
-    pub find_focus: RwSignal<bool>,
     pub editor: Rc<Editor>,
     pub kind: RwSignal<EditorViewKind>,
+    pub find_focus: RwSignal<bool>,
     pub sticky_header_height: RwSignal<f64>,
     pub common: Rc<CommonData>,
 }
@@ -229,9 +229,9 @@ impl EditorData {
             snippet: cx.create_rw_signal(None),
             inline_find: cx.create_rw_signal(None),
             last_inline_find: cx.create_rw_signal(None),
-            find_focus: cx.create_rw_signal(false),
             editor: Rc::new(editor),
             kind: cx.create_rw_signal(EditorViewKind::Normal),
+            find_focus: cx.create_rw_signal(false),
             sticky_header_height: cx.create_rw_signal(0.0),
             common,
         }

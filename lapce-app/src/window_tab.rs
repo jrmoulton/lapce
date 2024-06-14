@@ -1355,6 +1355,7 @@ impl WindowTabData {
 
     pub fn run_internal_command(&self, cmd: InternalCommand) {
         let cx = self.scope;
+
         match cmd {
             InternalCommand::ReloadConfig => {
                 self.reload_config();
