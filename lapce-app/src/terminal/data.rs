@@ -284,10 +284,6 @@ impl KeyPressFocus for TerminalData {
                 }
                 _ => return CommandExecuted::No,
             },
-            CommandKind::Workbench(cmd) => {
-                self.common.workbench_command.send(cmd.clone());
-                return CommandExecuted::Yes;
-            }
             _ => return CommandExecuted::No,
         };
         CommandExecuted::Yes
