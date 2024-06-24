@@ -1661,7 +1661,7 @@ checksum = "98de4bbd547a563b716d8dfa9aad1cb19bfab00f4fa09a6a4ed21dbcf44ce9c4"
 [[package]]
 name = "floem"
 version = "0.1.1"
-source = "git+https://github.com/lapce/floem?rev=9a9e6c21834ce2f30db2c36d9aadfeb98f899277#9a9e6c21834ce2f30db2c36d9aadfeb98f899277"
+source = "git+https://github.com/lapce/floem?rev=80f3a3a2d27777136a0018caf79fa0c479ff844f#80f3a3a2d27777136a0018caf79fa0c479ff844f"
 dependencies = [
  "bitflags 2.5.0",
  "copypasta",
@@ -1724,7 +1724,7 @@ dependencies = [
 [[package]]
 name = "floem-editor-core"
 version = "0.1.1"
-source = "git+https://github.com/lapce/floem?rev=9a9e6c21834ce2f30db2c36d9aadfeb98f899277#9a9e6c21834ce2f30db2c36d9aadfeb98f899277"
+source = "git+https://github.com/lapce/floem?rev=80f3a3a2d27777136a0018caf79fa0c479ff844f#80f3a3a2d27777136a0018caf79fa0c479ff844f"
 dependencies = [
  "bitflags 2.5.0",
  "itertools 0.12.1",
@@ -1802,7 +1802,7 @@ dependencies = [
 [[package]]
 name = "floem_reactive"
 version = "0.1.1"
-source = "git+https://github.com/lapce/floem?rev=9a9e6c21834ce2f30db2c36d9aadfeb98f899277#9a9e6c21834ce2f30db2c36d9aadfeb98f899277"
+source = "git+https://github.com/lapce/floem?rev=80f3a3a2d27777136a0018caf79fa0c479ff844f#80f3a3a2d27777136a0018caf79fa0c479ff844f"
 dependencies = [
  "smallvec",
 ]
@@ -1810,7 +1810,7 @@ dependencies = [
 [[package]]
 name = "floem_renderer"
 version = "0.1.1"
-source = "git+https://github.com/lapce/floem?rev=9a9e6c21834ce2f30db2c36d9aadfeb98f899277#9a9e6c21834ce2f30db2c36d9aadfeb98f899277"
+source = "git+https://github.com/lapce/floem?rev=80f3a3a2d27777136a0018caf79fa0c479ff844f#80f3a3a2d27777136a0018caf79fa0c479ff844f"
 dependencies = [
  "floem-cosmic-text",
  "image",
@@ -1821,7 +1821,7 @@ dependencies = [
 [[package]]
 name = "floem_tiny_skia_renderer"
 version = "0.1.1"
-source = "git+https://github.com/lapce/floem?rev=9a9e6c21834ce2f30db2c36d9aadfeb98f899277#9a9e6c21834ce2f30db2c36d9aadfeb98f899277"
+source = "git+https://github.com/lapce/floem?rev=80f3a3a2d27777136a0018caf79fa0c479ff844f#80f3a3a2d27777136a0018caf79fa0c479ff844f"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -1838,7 +1838,7 @@ dependencies = [
 [[package]]
 name = "floem_vger_renderer"
 version = "0.1.1"
-source = "git+https://github.com/lapce/floem?rev=9a9e6c21834ce2f30db2c36d9aadfeb98f899277#9a9e6c21834ce2f30db2c36d9aadfeb98f899277"
+source = "git+https://github.com/lapce/floem?rev=80f3a3a2d27777136a0018caf79fa0c479ff844f#80f3a3a2d27777136a0018caf79fa0c479ff844f"
 dependencies = [
  "anyhow",
  "floem-vger",
@@ -2971,7 +2971,7 @@ dependencies = [
  "tracing-subscriber",
  "unicode-width",
  "url",
- "windows-sys 0.48.0",
+ "windows-sys 0.52.0",
  "zip",
 ]
 
@@ -5046,9 +5046,9 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.3.34"
+version = "0.3.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8248b6521bb14bc45b4067159b9b6ad792e2d6d754d6c41fb50e29fefe38749"
+checksum = "5dfd88e563464686c916c7e46e623e520ddc6d79fa6641390f2e3fa86e83e885"
 dependencies = [
  "deranged",
  "itoa",
@@ -5067,9 +5067,9 @@ checksum = "ef927ca75afb808a4d64dd374f00a2adf8d0fcff8e7b184af886c3c87ec4a3f3"
 
 [[package]]
 name = "time-macros"
-version = "0.2.17"
+version = "0.2.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ba3a3ef41e6672a2f0f001392bb5dcd3ff0a9992d618ca761a11c3121547774"
+checksum = "3f252a68540fde3a3877aeea552b832b40ab9a69e318efd078774a01ddee1ccf"
 dependencies = [
  "num-conv",
  "time-core",

@@ -81,6 +81,12 @@ pub struct UIConfig {
 
     #[field_names(desc = "Display the Split/Close All buttons in the tab bar")]
     pub tab_split_closeall_visible: bool,
+
+    #[field_names(desc = "Display the status bar in the window")]
+    pub status_bar_visible: bool,
+
+    #[field_names(desc = "Display the command bar in the window")]
+    pub title_bar_visible: bool,
 }
 
 #[derive(

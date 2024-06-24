@@ -92,7 +92,10 @@ use crate::{
         item::{PaletteItem, PaletteItemContent},
         PaletteStatus,
     },
-    panel::{position::PanelContainerPosition, view::panel_container_view},
+    panel::{
+        position::{PanelContainerPosition, PanelPosition},
+        view::panel_container_view,
+    },
     plugin::{plugin_info_view, PluginData},
     settings::{settings_view, theme_color_settings_view},
     status::status,
@@ -604,6 +607,16 @@ fn editor_tab_header(
     let focus = window_tab_data.common.focus;
     let config = window_tab_data.common.config;
     let internal_command = window_tab_data.common.internal_command;
+    let num_window_tabs = window_tab_data.common.window_common.num_window_tabs;
+    let panel_styles = window_tab_data.panel.styles;
+    let left_is_open = move || {
+        panel_styles.with(|s| {
+            s.get(&PanelPosition::LeftTop)
+                .map(|s| s.shown)
+                .unwrap_or(false)
+        })
+    };
+
     let workbench_command = window_tab_data.common.workbench_command;
     let editor_tab_id =
         editor_tab.with_untracked(|editor_tab| editor_tab.editor_tab_id);
@@ -934,6 +947,17 @@ fn editor_tab_header(
     let content_size = create_rw_signal(Size::ZERO);
     let scroll_offset = create_rw_signal(Rect::ZERO);
     stack((
+        empty().style(move |s| {
+            let is_macos = cfg!(target_os = "macos");
+            let should_hide = if is_macos {
+                left_is_open()
+                    || (config.get().ui.title_bar_visible
+                        || num_window_tabs.get() > 1)
+            } else {
+                true
+            };
+            s.width(75.0).apply_if(should_hide, |s| s.hide())
+        }),
         stack({
             let size = create_rw_signal(Size::ZERO);
             (
@@ -3893,7 +3917,7 @@ fn load_shell_env() {
                     warn!("Overwriting '{key}', previous value: '{v}', new value '{value}'");
                 }
             };
-            std::env::set_var(key, value);
+            unsafe {std::env::set_var(key, value)};
         })
 }
 

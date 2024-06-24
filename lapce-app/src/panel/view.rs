@@ -446,6 +446,18 @@ fn panel_view(
     position: PanelPosition,
 ) -> impl View {
     let panel = window_tab_data.panel.clone();
+    let styles = panel.styles;
+
+    let move_over_terminal_tabs = move || {
+        styles.with(|s| {
+            s.get(&position).map(|s| s.maximized).unwrap_or(false)
+                && s.get(&PanelPosition::LeftTop)
+                    .map(|s| !s.shown)
+                    .unwrap_or(false)
+                && position != PanelPosition::LeftTop
+        })
+    };
+
     let panels = move || {
         panel
             .panels
@@ -463,7 +475,8 @@ fn panel_view(
         move |kind| {
             let view = match kind {
                 PanelKind::Terminal => {
-                    terminal_panel(window_tab_data.clone()).into_any()
+                    terminal_panel(window_tab_data.clone(), move_over_terminal_tabs)
+                        .into_any()
                 }
                 PanelKind::FileExplorer => {
                     file_explorer_panel(window_tab_data.clone(), position).into_any()
@@ -515,10 +528,13 @@ fn panel_picker(
 ) -> impl View {
     let panel = window_tab_data.panel.clone();
     let panels = panel.panels;
+    let styles = panel.styles;
     let config = window_tab_data.common.config;
     let dragging = window_tab_data.common.dragging;
     let is_bottom = position.is_bottom();
+    let is_left = position.is_left();
     let is_first = position.is_first();
+    let num_window_tabs = window_tab_data.common.window_common.num_window_tabs;
     dyn_stack(
         move || {
             panel
@@ -583,7 +599,7 @@ fn panel_picker(
                         )
                 })
                 .style(|s| s.padding(1.0)),
-                label(|| "".to_string()).style(move |s| {
+                empty().style(move |s| {
                     s.selectable(false)
                         .absolute()
                         .size_pct(100.0, 100.0)
@@ -612,7 +628,10 @@ fn panel_picker(
         },
     )
     .style(move |s| {
-        s.border_color(config.get().color(LapceColor::LAPCE_BORDER))
+        let config = config.get();
+        let title_bar_visible = config.ui.title_bar_visible;
+        let bottom_maximized = panel.panel_bottom_maximized(true);
+        s.border_color(config.color(LapceColor::LAPCE_BORDER))
             .apply_if(
                 panels.with(|p| {
                     p.get(&position).map(|p| p.is_empty()).unwrap_or(true)
@@ -620,6 +639,25 @@ fn panel_picker(
                 |s| s.hide(),
             )
             .apply_if(is_bottom, |s| s.flex_col())
+            .apply_if(!is_bottom, |s| s.height(config.ui.header_height() as f64))
+            .apply_if(
+                is_left && !title_bar_visible && num_window_tabs.get() < 2,
+                |s| s.margin_left(75),
+            )
+            .apply_if(
+                is_bottom
+                    && is_first
+                    && !title_bar_visible
+                    && num_window_tabs.get() < 2
+                    && bottom_maximized
+                    && !styles.with(|styles| {
+                        styles
+                            .get(&PanelPosition::LeftTop)
+                            .map(|s| s.shown)
+                            .unwrap_or(false)
+                    }),
+                |s| s.margin_top(30),
+            )
             .apply_if(is_bottom && is_first, |s| s.border_right(1.0))
             .apply_if(is_bottom && !is_first, |s| s.border_left(1.0))
             .apply_if(!is_bottom && is_first, |s| s.border_bottom(1.0))

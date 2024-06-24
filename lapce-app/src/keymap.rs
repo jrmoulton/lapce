@@ -371,6 +371,7 @@ pub fn keymap_view(editors: Editors, common: Rc<CommonData>) -> impl View {
             .padding_left(20.0)
             .padding_right(20.0)
     })
+    .debug_name("Keymap")
 }
 
 fn keyboard_picker_view(

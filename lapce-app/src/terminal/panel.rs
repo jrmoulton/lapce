@@ -150,7 +150,7 @@ impl TerminalPanelData {
                 if let EventRef::Keyboard(key_event) = event.into() {
                     if terminal.send_keypress(key_event) {
                         return Some(KeyPressHandle {
-                            handled: true,
+                            handled: false,
                             keymatch: handle.keymatch,
                             keypress: handle.keypress,
                         });

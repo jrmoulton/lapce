@@ -402,6 +402,7 @@ pub fn status(
             .flex_grow(0.0)
             .flex_shrink(0.0)
             .items_center()
+            .apply_if(!config.ui.status_bar_visible, |s| s.hide())
     })
     .debug_name("Status/Bottom Bar")
 }

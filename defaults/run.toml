@@ -5,13 +5,13 @@
 name = "task"
 
 # the type of the debugger. If not set, it can't be debugged but can still be run
-# type = "lldb"
+type = "lldb"
 
 # the program to run
-program = ""
+program = "/Users/jaredmoulton/.cargo/target/debug/lapce"
 
 # the program arguments, e.g. args = ["arg1", "arg2"], optional
-# args = []
+args = ["wait"]
 
 # current working directory, optional
 # cwd = "${workspace}"

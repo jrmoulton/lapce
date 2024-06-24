@@ -25,10 +25,21 @@ use crate::{
     window_tab::{Focus, WindowTabData},
 };
 
-pub fn terminal_panel(window_tab_data: Rc<WindowTabData>) -> impl View {
+pub fn terminal_panel(
+    window_tab_data: Rc<WindowTabData>,
+    move_tabs: impl Fn() -> bool + 'static,
+) -> impl View {
     let focus = window_tab_data.common.focus;
+    let num_window_tabs = window_tab_data.common.window_common.num_window_tabs;
+    let lapce_config = window_tab_data.common.config;
+    let title_bar_visible = move || lapce_config.with(|c| c.ui.title_bar_visible);
     stack((
-        terminal_tab_header(window_tab_data.clone()),
+        terminal_tab_header(window_tab_data.clone()).style(move |s| {
+            s.apply_if(
+                num_window_tabs.get() < 2 && !title_bar_visible() && move_tabs(),
+                |s| s.margin_left(35),
+            )
+        }),
         terminal_tab_content(window_tab_data),
     ))
     .on_event_cont(EventListener::PointerDown, move |_| {

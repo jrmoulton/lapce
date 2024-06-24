@@ -465,6 +465,7 @@ pub fn title(window_tab_data: Rc<WindowTabData>) -> impl View {
             .background(config.color(LapceColor::PANEL_BACKGROUND))
             .border_bottom(1.0)
             .border_color(config.color(LapceColor::LAPCE_BORDER))
+            .apply_if(!config.ui.title_bar_visible, |s| s.hide())
     })
     .debug_name("Title / Top Bar")
 }
